@@ -4,13 +4,40 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.example.androidui.ui.shared.button.ButtonPreset
+import com.example.androidui.ui.shared.button.ButtonSize
+import com.example.androidui.ui.shared.button.EmbossedButton
+import com.example.androidui.ui.shared.button.TactileButton
 import com.example.androidui.ui.theme.AndroidUITheme
 
 class MainActivity : ComponentActivity() {
@@ -19,10 +46,320 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             AndroidUITheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
+                DepthButtonDemoScreen()
+            }
+        }
+    }
+}
+
+@Composable
+fun DepthButtonDemoScreen() {
+    var clickCount by remember { mutableIntStateOf(0) }
+    var lastAction by remember { mutableStateOf("Tap any button to test depth") }
+
+    Scaffold(
+        modifier = Modifier.fillMaxSize(),
+        containerColor = MaterialTheme.colorScheme.background
+    ) { innerPadding ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+                .verticalScroll(rememberScrollState())
+                .padding(horizontal = 20.dp, vertical = 24.dp),
+            verticalArrangement = Arrangement.spacedBy(24.dp)
+        ) {
+            // Header
+            Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                Text(
+                    text = "Depth Buttons",
+                    style = MaterialTheme.typography.headlineMedium.copy(
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onBackground
+                    )
+                )
+                Text(
+                    text = "Tactile sinking buttons & embossed bevel surfaces with top inset highlights and bottom drop shadows.",
+                    style = MaterialTheme.typography.bodyMedium.copy(
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                )
+            }
+
+            // Live Action Feedback Card
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.surfaceContainerHigh
+                ),
+                shape = RoundedCornerShape(16.dp)
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Column {
+                        Text(
+                            text = "Last Action",
+                            style = MaterialTheme.typography.labelSmall.copy(
+                                color = MaterialTheme.colorScheme.outline
+                            )
+                        )
+                        Text(
+                            text = lastAction,
+                            style = MaterialTheme.typography.bodyMedium.copy(
+                                fontWeight = FontWeight.SemiBold,
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
+                        )
+                    }
+                    Surface(
+                        shape = RoundedCornerShape(12.dp),
+                        color = MaterialTheme.colorScheme.primaryContainer
+                    ) {
+                        Text(
+                            text = "Clicks: $clickCount",
+                            modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
+                            style = MaterialTheme.typography.labelMedium.copy(
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onPrimaryContainer
+                            )
+                        )
+                    }
+                }
+            }
+
+            // Section 1: Tactile 3D Buttons
+            Column(verticalArrangement = Arrangement.spacedBy(14.dp)) {
+                Text(
+                    text = "1. Tactile 3D Buttons (Physical Sink + Haptic)",
+                    style = MaterialTheme.typography.titleMedium.copy(
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onBackground
+                    )
+                )
+
+                // Presets: Primary & Secondary
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    TactileButton(
+                        onClick = {
+                            clickCount++
+                            lastAction = "Tactile Primary Pressed"
+                        },
+                        preset = ButtonPreset.Primary,
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Text(text = "✓", fontSize = 16.sp, fontWeight = FontWeight.Bold)
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(text = "Primary", fontWeight = FontWeight.SemiBold)
+                    }
+
+                    TactileButton(
+                        onClick = {
+                            clickCount++
+                            lastAction = "Tactile Secondary Pressed"
+                        },
+                        preset = ButtonPreset.Secondary,
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Text(text = "★", fontSize = 16.sp, fontWeight = FontWeight.Bold)
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(text = "Secondary", fontWeight = FontWeight.SemiBold)
+                    }
+                }
+
+                // Presets: Surface & Destructive
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    TactileButton(
+                        onClick = {
+                            clickCount++
+                            lastAction = "Tactile Surface Pressed"
+                        },
+                        preset = ButtonPreset.Surface,
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Text(text = "♥", fontSize = 16.sp, fontWeight = FontWeight.Bold)
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(text = "Surface", fontWeight = FontWeight.SemiBold)
+                    }
+
+                    TactileButton(
+                        onClick = {
+                            clickCount++
+                            lastAction = "Tactile Destructive Pressed"
+                        },
+                        preset = ButtonPreset.Destructive,
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Text(text = "✕", fontSize = 16.sp, fontWeight = FontWeight.Bold)
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(text = "Delete", fontWeight = FontWeight.SemiBold)
+                    }
+                }
+
+                // Size Variants
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(10.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    TactileButton(
+                        text = "Small",
+                        onClick = {
+                            clickCount++
+                            lastAction = "Small Tactile Pressed"
+                        },
+                        size = ButtonSize.Small,
+                        preset = ButtonPreset.Primary
+                    )
+
+                    TactileButton(
+                        text = "Medium",
+                        onClick = {
+                            clickCount++
+                            lastAction = "Medium Tactile Pressed"
+                        },
+                        size = ButtonSize.Medium,
+                        preset = ButtonPreset.Secondary,
+                        modifier = Modifier.weight(1f)
+                    )
+
+                    TactileButton(
+                        text = "Disabled",
+                        onClick = {},
+                        enabled = false,
+                        size = ButtonSize.Medium
+                    )
+                }
+
+                // Large Full Width Tactile Button
+                TactileButton(
+                    onClick = {
+                        clickCount++
+                        lastAction = "Large Add Action Pressed"
+                    },
+                    preset = ButtonPreset.Primary,
+                    size = ButtonSize.Large,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(text = "＋", fontSize = 20.sp, fontWeight = FontWeight.Bold)
+                    Spacer(modifier = Modifier.width(10.dp))
+                    Text(
+                        text = "Create New Project (Large 3D)",
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            // Section 2: Embossed Depth Buttons
+            Column(verticalArrangement = Arrangement.spacedBy(14.dp)) {
+                Text(
+                    text = "2. Embossed Depth Buttons (Bevel & Ripple)",
+                    style = MaterialTheme.typography.titleMedium.copy(
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onBackground
+                    )
+                )
+
+                // Presets: Primary & Secondary
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    EmbossedButton(
+                        onClick = {
+                            clickCount++
+                            lastAction = "Embossed Primary Pressed"
+                        },
+                        preset = ButtonPreset.Primary,
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Text(text = "Embossed Primary", fontWeight = FontWeight.SemiBold)
+                    }
+
+                    EmbossedButton(
+                        onClick = {
+                            clickCount++
+                            lastAction = "Embossed Secondary Pressed"
+                        },
+                        preset = ButtonPreset.Secondary,
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Text(text = "Embossed 2nd", fontWeight = FontWeight.SemiBold)
+                    }
+                }
+
+                // Presets: Surface & Destructive
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    EmbossedButton(
+                        onClick = {
+                            clickCount++
+                            lastAction = "Embossed Surface Pressed"
+                        },
+                        preset = ButtonPreset.Surface,
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Text(text = "Embossed Surface", fontWeight = FontWeight.SemiBold)
+                    }
+
+                    EmbossedButton(
+                        onClick = {
+                            clickCount++
+                            lastAction = "Embossed Destructive Pressed"
+                        },
+                        preset = ButtonPreset.Destructive,
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Text(text = "Embossed Danger", fontWeight = FontWeight.SemiBold)
+                    }
+                }
+
+                // Sizes
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(10.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    EmbossedButton(
+                        text = "Small",
+                        onClick = {
+                            clickCount++
+                            lastAction = "Small Embossed Pressed"
+                        },
+                        size = ButtonSize.Small,
+                        preset = ButtonPreset.Surface
+                    )
+
+                    EmbossedButton(
+                        text = "Medium Embossed",
+                        onClick = {
+                            clickCount++
+                            lastAction = "Medium Embossed Pressed"
+                        },
+                        size = ButtonSize.Medium,
+                        preset = ButtonPreset.Primary,
+                        modifier = Modifier.weight(1f)
+                    )
+
+                    EmbossedButton(
+                        text = "Disabled",
+                        onClick = {},
+                        enabled = false,
+                        size = ButtonSize.Medium
                     )
                 }
             }
@@ -30,18 +367,10 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
 @Preview(showBackground = true)
 @Composable
-fun GreetingPreview() {
+fun DepthButtonDemoScreenPreview() {
     AndroidUITheme {
-        Greeting("Android")
+        DepthButtonDemoScreen()
     }
 }
