@@ -248,38 +248,25 @@ private val AppShapes = Shapes(
 )
 
 @Composable
-fun AtamaProjectTheme(
-    darkTheme: Boolean = isSystemInDarkTheme(),
-    dynamicColor: Boolean = false,
-    content: @Composable () -> Unit
-) {
-    val colorScheme = when {
-        dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
-            val context = LocalContext.current
-            if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
-        }
-
-        darkTheme -> highContrastDarkColorScheme
-        else -> lightScheme
-    }
-
-    MaterialTheme(
-        colorScheme = colorScheme,
-        typography = Typography,
-        shapes = AppShapes,
-        content = content
-    )
-}
-
-@Composable
 fun AndroidUITheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     dynamicColor: Boolean = false,
     content: @Composable () -> Unit
 ) {
-    AtamaProjectTheme(
-        darkTheme = darkTheme,
-        dynamicColor = dynamicColor,
-        content = content
-    )
+  val colorScheme = when {
+      dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
+          val context = LocalContext.current
+          if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
+      }
+      
+      darkTheme -> highContrastDarkColorScheme
+      else -> lightScheme
+  }
+
+  MaterialTheme(
+    colorScheme = colorScheme,
+    typography = Typography,
+    shapes = AppShapes,
+    content = content
+  )
 }
