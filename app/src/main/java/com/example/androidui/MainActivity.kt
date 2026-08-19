@@ -71,14 +71,14 @@ fun EmbossedButtonDemoScreen() {
             // Header
             Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
                 Text(
-                    text = "Embossed Depth Buttons",
+                    text = "Subtle Embossed Buttons",
                     style = MaterialTheme.typography.headlineMedium.copy(
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.onBackground
                     )
                 )
                 Text(
-                    text = "Bevel depth with top inset highlight and bottom drop shadow. Inverts bevel when pressed.",
+                    text = "Modern neumorphic surface: top-left highlight gradient, bottom-right shadow gradient, and tactile depth compression on press.",
                     style = MaterialTheme.typography.bodyMedium.copy(
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )

@@ -6,7 +6,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -33,94 +32,91 @@ enum class ButtonSize {
 }
 
 /**
- * Represents the color specification for a depth button in enabled and disabled states.
+ * Color specification for subtle neumorphic embossed buttons.
+ * Uses top-left directional highlight and bottom-right directional shadow
+ * over a physical depth shadow layer.
  */
 @Immutable
 data class DepthButtonColors(
-    val containerColor: Color,
+    val surfaceColor: Color,
     val contentColor: Color,
-    val topHighlightColor: Color,
-    val bottomShadowColor: Color,
-    val disabledContainerColor: Color,
+    val highlightColor: Color,
+    val shadowGradientColor: Color,
+    val depthShadowColor: Color,
+    val disabledSurfaceColor: Color,
     val disabledContentColor: Color,
-    val disabledTopHighlightColor: Color,
-    val disabledBottomShadowColor: Color
+    val disabledHighlightColor: Color,
+    val disabledShadowGradientColor: Color,
+    val disabledDepthShadowColor: Color
 ) {
-    /**
-     * Returns the active container color based on the [enabled] state.
-     */
-    fun containerColor(enabled: Boolean): Color =
-        if (enabled) containerColor else disabledContainerColor
+    fun surfaceColor(enabled: Boolean): Color =
+        if (enabled) surfaceColor else disabledSurfaceColor
 
-    /**
-     * Returns the active content color based on the [enabled] state.
-     */
     fun contentColor(enabled: Boolean): Color =
         if (enabled) contentColor else disabledContentColor
 
-    /**
-     * Returns the top highlight color based on the [enabled] state.
-     */
-    fun topHighlightColor(enabled: Boolean): Color =
-        if (enabled) topHighlightColor else disabledTopHighlightColor
+    fun highlightColor(enabled: Boolean): Color =
+        if (enabled) highlightColor else disabledHighlightColor
 
-    /**
-     * Returns the bottom shadow color based on the [enabled] state.
-     */
-    fun bottomShadowColor(enabled: Boolean): Color =
-        if (enabled) bottomShadowColor else disabledBottomShadowColor
+    fun shadowGradientColor(enabled: Boolean): Color =
+        if (enabled) shadowGradientColor else disabledShadowGradientColor
+
+    fun depthShadowColor(enabled: Boolean): Color =
+        if (enabled) depthShadowColor else disabledDepthShadowColor
 }
 
 /**
- * Default styling, dimensions, and color schemes for Depth Buttons.
+ * Default styling, dimensions, and color schemes for Depth & Embossed Buttons.
  */
 object DepthButtonDefaults {
-    val EmbossedDepthDefault: Dp = 2.dp
-    val EmbossedDepthSmall: Dp = 1.5.dp
-    val EmbossedDepthLarge: Dp = 3.dp
-    val CornerRadiusSmall: Dp = 10.dp
-    val CornerRadiusMedium: Dp = 14.dp
-    val CornerRadiusLarge: Dp = 18.dp
+    val EmbossedDepthSmall: Dp = 2.5.dp
+    val EmbossedDepthMedium: Dp = 3.5.dp
+    val EmbossedDepthLarge: Dp = 5.dp
 
-    /**
-     * Returns standard min-height for the given [size].
-     */
-    fun minHeight(size: ButtonSize): Dp = when (size) {
-        ButtonSize.Small -> 36.dp
-        ButtonSize.Medium -> 48.dp
-        ButtonSize.Large -> 58.dp
+    val PressTravelSmall: Dp = 1.5.dp
+    val PressTravelMedium: Dp = 2.dp
+    val PressTravelLarge: Dp = 3.dp
+
+    val CornerRadiusSmall: Dp = 12.dp
+    val CornerRadiusMedium: Dp = 16.dp
+    val CornerRadiusLarge: Dp = 20.dp
+
+    fun depth(size: ButtonSize): Dp = when (size) {
+        ButtonSize.Small -> EmbossedDepthSmall
+        ButtonSize.Medium -> EmbossedDepthMedium
+        ButtonSize.Large -> EmbossedDepthLarge
     }
 
-    /**
-     * Returns standard horizontal and vertical padding for the given [size].
-     */
-    fun contentPadding(size: ButtonSize): PaddingValues = when (size) {
-        ButtonSize.Small -> PaddingValues(horizontal = 14.dp, vertical = 6.dp)
-        ButtonSize.Medium -> PaddingValues(horizontal = 20.dp, vertical = 10.dp)
-        ButtonSize.Large -> PaddingValues(horizontal = 26.dp, vertical = 14.dp)
+    fun pressTravel(size: ButtonSize): Dp = when (size) {
+        ButtonSize.Small -> PressTravelSmall
+        ButtonSize.Medium -> PressTravelMedium
+        ButtonSize.Large -> PressTravelLarge
     }
 
-    /**
-     * Returns corner radius for the given [size].
-     */
     fun cornerRadius(size: ButtonSize): Dp = when (size) {
         ButtonSize.Small -> CornerRadiusSmall
         ButtonSize.Medium -> CornerRadiusMedium
         ButtonSize.Large -> CornerRadiusLarge
     }
 
-    /**
-     * Returns icon size for the given [size].
-     */
+    fun minHeight(size: ButtonSize): Dp = when (size) {
+        ButtonSize.Small -> 36.dp
+        ButtonSize.Medium -> 48.dp
+        ButtonSize.Large -> 58.dp
+    }
+
+    fun contentPadding(size: ButtonSize): PaddingValues = when (size) {
+        ButtonSize.Small -> PaddingValues(horizontal = 14.dp, vertical = 8.dp)
+        ButtonSize.Medium -> PaddingValues(horizontal = 22.dp, vertical = 12.dp)
+        ButtonSize.Large -> PaddingValues(horizontal = 28.dp, vertical = 16.dp)
+    }
+
     fun iconSize(size: ButtonSize): Dp = when (size) {
         ButtonSize.Small -> 16.dp
         ButtonSize.Medium -> 20.dp
         ButtonSize.Large -> 24.dp
     }
 
-    /**
-     * Returns text style for the given [size].
-     */
     @Composable
     @ReadOnlyComposable
     fun textStyle(size: ButtonSize): TextStyle = when (size) {
@@ -135,9 +131,6 @@ object DepthButtonDefaults {
         )
     }
 
-    /**
-     * Returns the [DepthButtonColors] for the specified [preset].
-     */
     @Composable
     @ReadOnlyComposable
     fun presetColors(preset: ButtonPreset): DepthButtonColors = when (preset) {
@@ -147,97 +140,95 @@ object DepthButtonDefaults {
         ButtonPreset.Destructive -> destructiveColors()
     }
 
-    /**
-     * Semantic Primary color specification.
-     */
     @Composable
     @ReadOnlyComposable
     fun primaryColors(
-        containerColor: Color = MaterialTheme.colorScheme.primary,
+        surfaceColor: Color = MaterialTheme.colorScheme.primary,
         contentColor: Color = MaterialTheme.colorScheme.onPrimary,
-        topHighlightColor: Color = Color.White.copy(alpha = 0.35f),
-        bottomShadowColor: Color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.9f)
-            .compositeOver(Color.Black.copy(alpha = 0.55f))
+        highlightColor: Color = Color.White.copy(alpha = 0.35f),
+        shadowGradientColor: Color = Color.Black.copy(alpha = 0.28f),
+        depthShadowColor: Color = Color.Black.copy(alpha = 0.22f)
     ): DepthButtonColors {
         return DepthButtonColors(
-            containerColor = containerColor,
+            surfaceColor = surfaceColor,
             contentColor = contentColor,
-            topHighlightColor = topHighlightColor,
-            bottomShadowColor = bottomShadowColor,
-            disabledContainerColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f),
+            highlightColor = highlightColor,
+            shadowGradientColor = shadowGradientColor,
+            depthShadowColor = depthShadowColor,
+            disabledSurfaceColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f),
             disabledContentColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f),
-            disabledTopHighlightColor = Color.White.copy(alpha = 0.10f),
-            disabledBottomShadowColor = Color.Black.copy(alpha = 0.15f)
+            disabledHighlightColor = Color.White.copy(alpha = 0.10f),
+            disabledShadowGradientColor = Color.Transparent,
+            disabledDepthShadowColor = Color.Transparent
         )
     }
 
-    /**
-     * Semantic Secondary color specification.
-     */
     @Composable
     @ReadOnlyComposable
     fun secondaryColors(
-        containerColor: Color = MaterialTheme.colorScheme.secondary,
+        surfaceColor: Color = MaterialTheme.colorScheme.secondary,
         contentColor: Color = MaterialTheme.colorScheme.onSecondary,
-        topHighlightColor: Color = Color.White.copy(alpha = 0.30f),
-        bottomShadowColor: Color = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.9f)
-            .compositeOver(Color.Black.copy(alpha = 0.5f))
+        highlightColor: Color = Color.White.copy(alpha = 0.32f),
+        shadowGradientColor: Color = Color.Black.copy(alpha = 0.24f),
+        depthShadowColor: Color = Color.Black.copy(alpha = 0.20f)
     ): DepthButtonColors {
         return DepthButtonColors(
-            containerColor = containerColor,
+            surfaceColor = surfaceColor,
             contentColor = contentColor,
-            topHighlightColor = topHighlightColor,
-            bottomShadowColor = bottomShadowColor,
-            disabledContainerColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f),
+            highlightColor = highlightColor,
+            shadowGradientColor = shadowGradientColor,
+            depthShadowColor = depthShadowColor,
+            disabledSurfaceColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f),
             disabledContentColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f),
-            disabledTopHighlightColor = Color.White.copy(alpha = 0.10f),
-            disabledBottomShadowColor = Color.Black.copy(alpha = 0.15f)
+            disabledHighlightColor = Color.White.copy(alpha = 0.10f),
+            disabledShadowGradientColor = Color.Transparent,
+            disabledDepthShadowColor = Color.Transparent
         )
     }
 
-    /**
-     * Semantic Surface / Neutral color specification.
-     */
     @Composable
     @ReadOnlyComposable
     fun surfaceColors(
-        containerColor: Color = MaterialTheme.colorScheme.surfaceContainerHigh,
+        surfaceColor: Color = MaterialTheme.colorScheme.surfaceContainerHigh,
         contentColor: Color = MaterialTheme.colorScheme.onSurface,
-        topHighlightColor: Color = Color.White.copy(alpha = 0.45f),
-        bottomShadowColor: Color = MaterialTheme.colorScheme.scrim.copy(alpha = 0.32f)
+        highlightColor: Color = Color.White.copy(alpha = 0.70f),
+        shadowGradientColor: Color = Color.Black.copy(alpha = 0.16f),
+        depthShadowColor: Color = Color.Black.copy(alpha = 0.14f)
     ): DepthButtonColors {
         return DepthButtonColors(
-            containerColor = containerColor,
+            surfaceColor = surfaceColor,
             contentColor = contentColor,
-            topHighlightColor = topHighlightColor,
-            bottomShadowColor = bottomShadowColor,
-            disabledContainerColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.08f),
+            highlightColor = highlightColor,
+            shadowGradientColor = shadowGradientColor,
+            depthShadowColor = depthShadowColor,
+            disabledSurfaceColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.08f),
             disabledContentColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.35f),
-            disabledTopHighlightColor = Color.White.copy(alpha = 0.08f),
-            disabledBottomShadowColor = Color.Black.copy(alpha = 0.10f)
+            disabledHighlightColor = Color.White.copy(alpha = 0.10f),
+            disabledShadowGradientColor = Color.Transparent,
+            disabledDepthShadowColor = Color.Transparent
         )
     }
 
-    /**
-     * Semantic Destructive / Danger color specification.
-     */
     @Composable
     @ReadOnlyComposable
     fun destructiveColors(
-        containerColor: Color = likeRed,
+        surfaceColor: Color = likeRed,
         contentColor: Color = Color.White,
-        topHighlightColor: Color = Color.White.copy(alpha = 0.35f),
-        bottomShadowColor: Color = Color(0xFF7A0B0B)
+        highlightColor: Color = Color.White.copy(alpha = 0.35f),
+        shadowGradientColor: Color = Color.Black.copy(alpha = 0.30f),
+        depthShadowColor: Color = Color(0xFF5A0808).copy(alpha = 0.40f)
     ): DepthButtonColors {
         return DepthButtonColors(
-            containerColor = containerColor,
+            surfaceColor = surfaceColor,
             contentColor = contentColor,
-            topHighlightColor = topHighlightColor,
-            bottomShadowColor = bottomShadowColor,
-            disabledContainerColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f),
+            highlightColor = highlightColor,
+            shadowGradientColor = shadowGradientColor,
+            depthShadowColor = depthShadowColor,
+            disabledSurfaceColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f),
             disabledContentColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f),
-            disabledTopHighlightColor = Color.White.copy(alpha = 0.10f),
-            disabledBottomShadowColor = Color.Black.copy(alpha = 0.15f)
+            disabledHighlightColor = Color.White.copy(alpha = 0.10f),
+            disabledShadowGradientColor = Color.Transparent,
+            disabledDepthShadowColor = Color.Transparent
         )
     }
 }
