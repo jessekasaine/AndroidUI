@@ -1,8 +1,5 @@
 package com.example.androidui.ui.shared.button
 
-import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.animateDpAsState
-import androidx.compose.animation.core.spring
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
@@ -14,7 +11,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -40,11 +36,10 @@ import androidx.compose.ui.unit.dp
 import com.example.androidui.ui.theme.AndroidUITheme
 
 /**
- * A modern subtle neumorphic/embossed surface button featuring:
- * - Soft underlying physical depth shadow that dynamically compresses when pressed
- * - Directional light highlight gradient (top-left to bottom-right)
- * - Directional shadow gradient (bottom-right to top-left)
- * - Tactile downward Y-offset animation upon user press
+ * A standard, gradient-free button featuring:
+ * - Solid Embossed (raised) bevel edges when idle (top-left highlight, bottom-right shadow)
+ * - Solid Debossed (sunken) bevel edges when clicked/pressed (top-left shadow, bottom-right highlight)
+ * - No gradients and no layout offset/translation animations.
  */
 @Composable
 fun EmbossedButton(
@@ -54,8 +49,7 @@ fun EmbossedButton(
     preset: ButtonPreset = ButtonPreset.Primary,
     size: ButtonSize = ButtonSize.Medium,
     colors: DepthButtonColors = DepthButtonDefaults.presetColors(preset),
-    depth: Dp = DepthButtonDefaults.depth(size),
-    pressTravel: Dp = DepthButtonDefaults.pressTravel(size),
+    bevelWidth: Dp = DepthButtonDefaults.bevelWidth(size),
     cornerRadius: Dp = DepthButtonDefaults.cornerRadius(size),
     contentPadding: PaddingValues = DepthButtonDefaults.contentPadding(size),
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
@@ -63,34 +57,21 @@ fun EmbossedButton(
 ) {
     val isPressed by interactionSource.collectIsPressedAsState()
 
-    val currentOffsetY by animateDpAsState(
-        targetValue = if (isPressed && enabled) pressTravel else 0.dp,
-        animationSpec = spring(
-            dampingRatio = Spring.DampingRatioMediumBouncy,
-            stiffness = Spring.StiffnessMedium
-        ),
-        label = "embossedButtonOffset"
-    )
-
     val surfaceColor = colors.surfaceColor(enabled)
     val contentColor = colors.contentColor(enabled)
     val highlightColor = colors.highlightColor(enabled)
-    val shadowGradientColor = colors.shadowGradientColor(enabled)
-    val depthShadowColor = colors.depthShadowColor(enabled)
+    val shadowColor = colors.shadowColor(enabled)
     val shape = RoundedCornerShape(cornerRadius)
 
     Box(
         modifier = modifier
-            .padding(bottom = depth)
-            .offset(y = currentOffsetY)
-            .subtleEmbossedSurface(
+            .embossedSurface(
+                isPressed = isPressed && enabled,
                 surfaceColor = surfaceColor,
                 highlightColor = highlightColor,
-                shadowGradientColor = shadowGradientColor,
-                depthShadowColor = depthShadowColor,
+                shadowColor = shadowColor,
                 cornerRadius = cornerRadius,
-                depth = depth,
-                currentOffsetY = currentOffsetY
+                bevelWidth = bevelWidth
             )
             .clip(shape)
             .clickable(
@@ -132,8 +113,7 @@ fun EmbossedButton(
     preset: ButtonPreset = ButtonPreset.Primary,
     size: ButtonSize = ButtonSize.Medium,
     colors: DepthButtonColors = DepthButtonDefaults.presetColors(preset),
-    depth: Dp = DepthButtonDefaults.depth(size),
-    pressTravel: Dp = DepthButtonDefaults.pressTravel(size),
+    bevelWidth: Dp = DepthButtonDefaults.bevelWidth(size),
     cornerRadius: Dp = DepthButtonDefaults.cornerRadius(size),
     contentPadding: PaddingValues = DepthButtonDefaults.contentPadding(size),
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() }
@@ -145,8 +125,7 @@ fun EmbossedButton(
         preset = preset,
         size = size,
         colors = colors,
-        depth = depth,
-        pressTravel = pressTravel,
+        bevelWidth = bevelWidth,
         cornerRadius = cornerRadius,
         contentPadding = contentPadding,
         interactionSource = interactionSource
@@ -188,7 +167,7 @@ fun EmbossedButtonsShowcase() {
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         Text(
-            text = "Modern Subtle Embossed / Neumorphic Buttons",
+            text = "Solid Embossed & Debossed Buttons",
             style = LocalTextStyle.current.copy(fontWeight = FontWeight.Bold)
         )
 
@@ -254,4 +233,5 @@ fun EmbossedButtonsShowcase() {
         }
     }
 }
+
 

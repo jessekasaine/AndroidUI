@@ -5,88 +5,95 @@ import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.drawscope.clipPath
 import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.dp
 
 /**
- * Draws a subtle embossed/neumorphic surface with soft physical depth underneath,
- * a directional top-left light highlight, and a directional bottom-right dark shadow.
+ * Draws a solid Embossed (raised) or Debossed (sunken) surface using crisp solid-color bevel edges.
+ *
+ * - Normal (unpressed): Top-Left highlight border + Bottom-Right shadow border (Embossed).
+ * - Pressed: Top-Left shadow border + Bottom-Right highlight border (Debossed).
+ * - Gradients and animations are entirely omitted for a clean, snappy, normal button look.
  */
-fun Modifier.subtleEmbossedSurface(
+fun Modifier.embossedSurface(
+    isPressed: Boolean,
     surfaceColor: Color,
     highlightColor: Color,
-    shadowGradientColor: Color,
-    depthShadowColor: Color,
+    shadowColor: Color,
     cornerRadius: Dp,
-    depth: Dp,
-    currentOffsetY: Dp = 0.dp
+    bevelWidth: Dp
 ): Modifier = this.drawWithCache {
     val cornerRadiusPx = cornerRadius.toPx()
-    val depthPx = depth.toPx()
-    val currentOffsetYPx = currentOffsetY.toPx()
+    val bevelWidthPx = bevelWidth.toPx()
 
-    // Remaining physical depth underneath as button is pressed down
-    val remainingDepthY = (depthPx - currentOffsetYPx).coerceAtLeast(0f)
-    val shadowOffsetRatio = if (depthPx > 0f) (remainingDepthY / depthPx) else 0f
+    val topLeftClip = Path().apply {
+        moveTo(0f, 0f)
+        lineTo(size.width, 0f)
+        lineTo(0f, size.height)
+        close()
+    }
 
-    val highlightGradient = Brush.linearGradient(
-        colors = listOf(
-            highlightColor,
-            highlightColor.copy(alpha = 0.0f)
-        ),
-        start = Offset.Zero,
-        end = Offset(size.width, size.height)
-    )
+    val bottomRightClip = Path().apply {
+        moveTo(size.width, 0f)
+        lineTo(size.width, size.height)
+        lineTo(0f, size.height)
+        close()
+    }
 
-    val shadowGradient = Brush.linearGradient(
-        colors = listOf(
-            shadowGradientColor,
-            shadowGradientColor.copy(alpha = 0.0f)
-        ),
-        start = Offset(size.width, size.height),
-        end = Offset.Zero
-    )
+    val inset = bevelWidthPx / 2f
+    val stroke = Stroke(width = bevelWidthPx)
+    val innerRadius = (cornerRadiusPx - inset).coerceAtLeast(0f)
 
     onDrawBehind {
-        // 1. Dark depth layer underneath the button (compresses on press)
-        if (remainingDepthY > 0f && depthShadowColor.alpha > 0f) {
-            drawRoundRect(
-                color = depthShadowColor.copy(alpha = depthShadowColor.alpha * (0.6f + 0.4f * shadowOffsetRatio)),
-                topLeft = Offset(
-                    x = 0f,
-                    y = remainingDepthY
-                ),
-                size = Size(
-                    width = size.width,
-                    height = size.height
-                ),
-                cornerRadius = CornerRadius(cornerRadiusPx)
-            )
-        }
-
-        // 2. Main surface
+        // 1. Solid surface background
         drawRoundRect(
             color = surfaceColor,
             cornerRadius = CornerRadius(cornerRadiusPx)
         )
 
-        // 3. Directional light coming from top-left
-        if (highlightColor.alpha > 0f) {
-            drawRoundRect(
-                brush = highlightGradient,
-                cornerRadius = CornerRadius(cornerRadiusPx)
-            )
-        }
+        if (bevelWidthPx > 0f) {
+            // Determine bevel colors based on pressed state:
+            // Embossed (normal): Top-Left = Highlight, Bottom-Right = Shadow
+            // Debossed (pressed): Top-Left = Shadow, Bottom-Right = Highlight
+            val topLeftColor = if (isPressed) shadowColor else highlightColor
+            val bottomRightColor = if (isPressed) highlightColor else shadowColor
 
-        // 4. Darker lower-right edge
-        if (shadowGradientColor.alpha > 0f) {
-            drawRoundRect(
-                brush = shadowGradient,
-                cornerRadius = CornerRadius(cornerRadiusPx)
+            val borderRectOffset = Offset(inset, inset)
+            val borderRectSize = Size(
+                width = (size.width - bevelWidthPx).coerceAtLeast(0f),
+                height = (size.height - bevelWidthPx).coerceAtLeast(0f)
             )
+
+            // 2. Top-Left Bevel
+            if (topLeftColor.alpha > 0f) {
+                clipPath(topLeftClip) {
+                    drawRoundRect(
+                        color = topLeftColor,
+                        topLeft = borderRectOffset,
+                        size = borderRectSize,
+                        cornerRadius = CornerRadius(innerRadius),
+                        style = stroke
+                    )
+                }
+            }
+
+            // 3. Bottom-Right Bevel
+            if (bottomRightColor.alpha > 0f) {
+                clipPath(bottomRightClip) {
+                    drawRoundRect(
+                        color = bottomRightColor,
+                        topLeft = borderRectOffset,
+                        size = borderRectSize,
+                        cornerRadius = CornerRadius(innerRadius),
+                        style = stroke
+                    )
+                }
+            }
         }
     }
 }
+
 
