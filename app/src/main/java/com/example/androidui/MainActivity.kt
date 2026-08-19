@@ -78,7 +78,7 @@ fun EmbossedButtonDemoScreen() {
                     )
                 )
                 Text(
-                    text = "Solid raised bevel when idle (Embossed), instantly transitioning to sunken bevel when clicked (Debossed). No gradients or layout animations.",
+                    text = "Solid under-shadow depth when idle (Embossed), instantly pressing down into a sunken shadow when clicked (Debossed). Zero gradients & animations.",
                     style = MaterialTheme.typography.bodyMedium.copy(
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )

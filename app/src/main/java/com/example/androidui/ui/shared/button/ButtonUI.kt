@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -36,10 +37,10 @@ import androidx.compose.ui.unit.dp
 import com.example.androidui.ui.theme.AndroidUITheme
 
 /**
- * A standard, gradient-free button featuring:
- * - Solid Embossed (raised) bevel edges when idle (top-left highlight, bottom-right shadow)
- * - Solid Debossed (sunken) bevel edges when clicked/pressed (top-left shadow, bottom-right highlight)
- * - No gradients and no layout offset/translation animations.
+ * A physical, gradient-free and animation-free Embossed Button featuring:
+ * - Solid under-button depth shadow layer offset at (depth, depth) when idle.
+ * - Instant physical press: surface shifts by `depth` and flattens the under-shadow into an interior sunken deboss.
+ * - Zero gradients and zero animated transitions for maximum UI responsiveness.
  */
 @Composable
 fun EmbossedButton(
@@ -49,29 +50,30 @@ fun EmbossedButton(
     preset: ButtonPreset = ButtonPreset.Primary,
     size: ButtonSize = ButtonSize.Medium,
     colors: DepthButtonColors = DepthButtonDefaults.presetColors(preset),
-    bevelWidth: Dp = DepthButtonDefaults.bevelWidth(size),
+    depth: Dp = DepthButtonDefaults.depth(size),
     cornerRadius: Dp = DepthButtonDefaults.cornerRadius(size),
     contentPadding: PaddingValues = DepthButtonDefaults.contentPadding(size),
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
     content: @Composable RowScope.() -> Unit
 ) {
     val isPressed by interactionSource.collectIsPressedAsState()
+    val pressOffset = if (isPressed && enabled) depth else 0.dp
 
     val surfaceColor = colors.surfaceColor(enabled)
     val contentColor = colors.contentColor(enabled)
-    val highlightColor = colors.highlightColor(enabled)
     val shadowColor = colors.shadowColor(enabled)
     val shape = RoundedCornerShape(cornerRadius)
 
     Box(
         modifier = modifier
+            .offset(x = pressOffset, y = pressOffset)
             .embossedSurface(
                 isPressed = isPressed && enabled,
+                enabled = enabled,
                 surfaceColor = surfaceColor,
-                highlightColor = highlightColor,
                 shadowColor = shadowColor,
                 cornerRadius = cornerRadius,
-                bevelWidth = bevelWidth
+                depth = depth
             )
             .clip(shape)
             .clickable(
@@ -102,7 +104,7 @@ fun EmbossedButton(
 }
 
 /**
- * Text overload for [EmbossedButton].
+ * Text convenience overload for [EmbossedButton].
  */
 @Composable
 fun EmbossedButton(
@@ -113,7 +115,7 @@ fun EmbossedButton(
     preset: ButtonPreset = ButtonPreset.Primary,
     size: ButtonSize = ButtonSize.Medium,
     colors: DepthButtonColors = DepthButtonDefaults.presetColors(preset),
-    bevelWidth: Dp = DepthButtonDefaults.bevelWidth(size),
+    depth: Dp = DepthButtonDefaults.depth(size),
     cornerRadius: Dp = DepthButtonDefaults.cornerRadius(size),
     contentPadding: PaddingValues = DepthButtonDefaults.contentPadding(size),
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() }
@@ -125,7 +127,7 @@ fun EmbossedButton(
         preset = preset,
         size = size,
         colors = colors,
-        bevelWidth = bevelWidth,
+        depth = depth,
         cornerRadius = cornerRadius,
         contentPadding = contentPadding,
         interactionSource = interactionSource
@@ -167,7 +169,7 @@ fun EmbossedButtonsShowcase() {
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         Text(
-            text = "Solid Embossed & Debossed Buttons",
+            text = "Physical Embossed & Instant Debossed Buttons",
             style = LocalTextStyle.current.copy(fontWeight = FontWeight.Bold)
         )
 

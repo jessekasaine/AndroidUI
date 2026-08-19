@@ -32,20 +32,15 @@ enum class ButtonSize {
 }
 
 /**
- * Color specification for solid Embossed and Debossed buttons.
- *
- * Normal (Embossed): Top-Left = highlightColor, Bottom-Right = shadowColor
- * Pressed (Debossed): Top-Left = shadowColor, Bottom-Right = highlightColor
+ * Color specification for physical Embossed and Debossed buttons.
  */
 @Immutable
 data class DepthButtonColors(
     val surfaceColor: Color,
     val contentColor: Color,
-    val highlightColor: Color,
     val shadowColor: Color,
     val disabledSurfaceColor: Color,
     val disabledContentColor: Color,
-    val disabledHighlightColor: Color,
     val disabledShadowColor: Color
 ) {
     fun surfaceColor(enabled: Boolean): Color =
@@ -53,9 +48,6 @@ data class DepthButtonColors(
 
     fun contentColor(enabled: Boolean): Color =
         if (enabled) contentColor else disabledContentColor
-
-    fun highlightColor(enabled: Boolean): Color =
-        if (enabled) highlightColor else disabledHighlightColor
 
     fun shadowColor(enabled: Boolean): Color =
         if (enabled) shadowColor else disabledShadowColor
@@ -65,18 +57,18 @@ data class DepthButtonColors(
  * Default styling, dimensions, and color schemes for Embossed & Debossed Buttons.
  */
 object DepthButtonDefaults {
-    val BevelWidthSmall: Dp = 1.5.dp
-    val BevelWidthMedium: Dp = 2.dp
-    val BevelWidthLarge: Dp = 2.5.dp
+    val DepthSmall: Dp = 2.dp
+    val DepthMedium: Dp = 3.dp
+    val DepthLarge: Dp = 4.dp
 
     val CornerRadiusSmall: Dp = 10.dp
     val CornerRadiusMedium: Dp = 14.dp
     val CornerRadiusLarge: Dp = 18.dp
 
-    fun bevelWidth(size: ButtonSize): Dp = when (size) {
-        ButtonSize.Small -> BevelWidthSmall
-        ButtonSize.Medium -> BevelWidthMedium
-        ButtonSize.Large -> BevelWidthLarge
+    fun depth(size: ButtonSize): Dp = when (size) {
+        ButtonSize.Small -> DepthSmall
+        ButtonSize.Medium -> DepthMedium
+        ButtonSize.Large -> DepthLarge
     }
 
     fun cornerRadius(size: ButtonSize): Dp = when (size) {
@@ -131,17 +123,14 @@ object DepthButtonDefaults {
     fun primaryColors(
         surfaceColor: Color = MaterialTheme.colorScheme.primary,
         contentColor: Color = MaterialTheme.colorScheme.onPrimary,
-        highlightColor: Color = Color.White.copy(alpha = 0.45f),
-        shadowColor: Color = Color.Black.copy(alpha = 0.40f)
+        shadowColor: Color = Color.Black.copy(alpha = 0.35f)
     ): DepthButtonColors {
         return DepthButtonColors(
             surfaceColor = surfaceColor,
             contentColor = contentColor,
-            highlightColor = highlightColor,
             shadowColor = shadowColor,
             disabledSurfaceColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f),
             disabledContentColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f),
-            disabledHighlightColor = Color.White.copy(alpha = 0.12f),
             disabledShadowColor = Color.Black.copy(alpha = 0.10f)
         )
     }
@@ -151,17 +140,14 @@ object DepthButtonDefaults {
     fun secondaryColors(
         surfaceColor: Color = MaterialTheme.colorScheme.secondary,
         contentColor: Color = MaterialTheme.colorScheme.onSecondary,
-        highlightColor: Color = Color.White.copy(alpha = 0.45f),
-        shadowColor: Color = Color.Black.copy(alpha = 0.38f)
+        shadowColor: Color = Color.Black.copy(alpha = 0.35f)
     ): DepthButtonColors {
         return DepthButtonColors(
             surfaceColor = surfaceColor,
             contentColor = contentColor,
-            highlightColor = highlightColor,
             shadowColor = shadowColor,
             disabledSurfaceColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f),
             disabledContentColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f),
-            disabledHighlightColor = Color.White.copy(alpha = 0.12f),
             disabledShadowColor = Color.Black.copy(alpha = 0.10f)
         )
     }
@@ -171,17 +157,14 @@ object DepthButtonDefaults {
     fun surfaceColors(
         surfaceColor: Color = MaterialTheme.colorScheme.surfaceContainerHigh,
         contentColor: Color = MaterialTheme.colorScheme.onSurface,
-        highlightColor: Color = Color.White.copy(alpha = 0.85f),
-        shadowColor: Color = Color.Black.copy(alpha = 0.28f)
+        shadowColor: Color = Color.Black.copy(alpha = 0.25f)
     ): DepthButtonColors {
         return DepthButtonColors(
             surfaceColor = surfaceColor,
             contentColor = contentColor,
-            highlightColor = highlightColor,
             shadowColor = shadowColor,
             disabledSurfaceColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.08f),
             disabledContentColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.35f),
-            disabledHighlightColor = Color.White.copy(alpha = 0.20f),
             disabledShadowColor = Color.Black.copy(alpha = 0.08f)
         )
     }
@@ -191,17 +174,14 @@ object DepthButtonDefaults {
     fun destructiveColors(
         surfaceColor: Color = likeRed,
         contentColor: Color = Color.White,
-        highlightColor: Color = Color.White.copy(alpha = 0.45f),
-        shadowColor: Color = Color.Black.copy(alpha = 0.45f)
+        shadowColor: Color = Color.Black.copy(alpha = 0.40f)
     ): DepthButtonColors {
         return DepthButtonColors(
             surfaceColor = surfaceColor,
             contentColor = contentColor,
-            highlightColor = highlightColor,
             shadowColor = shadowColor,
             disabledSurfaceColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f),
             disabledContentColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f),
-            disabledHighlightColor = Color.White.copy(alpha = 0.12f),
             disabledShadowColor = Color.Black.copy(alpha = 0.10f)
         )
     }
