@@ -75,12 +75,9 @@ data class DepthButtonColors(
  * Default styling, dimensions, and color schemes for Depth Buttons.
  */
 object DepthButtonDefaults {
-
-    val TactileDepthDefault: Dp = 4.dp
-    val TactileDepthSmall: Dp = 3.dp
-    val TactileDepthLarge: Dp = 5.dp
-
     val EmbossedDepthDefault: Dp = 2.dp
+    val EmbossedDepthSmall: Dp = 1.5.dp
+    val EmbossedDepthLarge: Dp = 3.dp
     val CornerRadiusSmall: Dp = 10.dp
     val CornerRadiusMedium: Dp = 14.dp
     val CornerRadiusLarge: Dp = 18.dp
