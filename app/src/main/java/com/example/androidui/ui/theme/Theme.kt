@@ -270,3 +270,16 @@ fun AtamaProjectTheme(
         content = content
     )
 }
+
+@Composable
+fun AndroidUITheme(
+    darkTheme: Boolean = isSystemInDarkTheme(),
+    dynamicColor: Boolean = false,
+    content: @Composable () -> Unit
+) {
+    AtamaProjectTheme(
+        darkTheme = darkTheme,
+        dynamicColor = dynamicColor,
+        content = content
+    )
+}
