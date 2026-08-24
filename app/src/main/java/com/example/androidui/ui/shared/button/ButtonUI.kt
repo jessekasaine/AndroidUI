@@ -1,5 +1,6 @@
 package com.example.androidui.ui.shared.button
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
@@ -11,7 +12,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -20,6 +20,7 @@ import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
@@ -37,10 +38,8 @@ import androidx.compose.ui.unit.dp
 import com.example.androidui.ui.theme.AndroidUITheme
 
 /**
- * A physical, gradient-free and animation-free Embossed Button featuring:
- * - Solid under-button depth shadow layer offset at (depth, depth) when idle.
- * - Instant physical press: surface shifts by `depth` and flattens the under-shadow into an interior sunken deboss.
- * - Zero gradients and zero animated transitions for maximum UI responsiveness.
+ * An embossed depth button featuring a soft top inner highlight and bottom drop shadow.
+ * Switches into a sunken inverted bevel state when pressed, with ripple feedback.
  */
 @Composable
 fun EmbossedButton(
@@ -50,35 +49,45 @@ fun EmbossedButton(
     preset: ButtonPreset = ButtonPreset.Primary,
     size: ButtonSize = ButtonSize.Medium,
     colors: DepthButtonColors = DepthButtonDefaults.presetColors(preset),
-    depth: Dp = DepthButtonDefaults.depth(size),
+    depth: Dp = when (size) {
+        ButtonSize.Small -> DepthButtonDefaults.EmbossedDepthSmall
+        ButtonSize.Large -> DepthButtonDefaults.EmbossedDepthLarge
+        ButtonSize.Medium -> DepthButtonDefaults.EmbossedDepthDefault
+    },
     cornerRadius: Dp = DepthButtonDefaults.cornerRadius(size),
     contentPadding: PaddingValues = DepthButtonDefaults.contentPadding(size),
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
     content: @Composable RowScope.() -> Unit
 ) {
     val isPressed by interactionSource.collectIsPressedAsState()
-    val pressOffset = if (isPressed && enabled) depth else 0.dp
 
-    val surfaceColor = colors.surfaceColor(enabled)
-    val contentColor = colors.contentColor(enabled)
-    val shadowColor = colors.shadowColor(enabled)
+    val currentContainerColor = colors.containerColor(enabled)
+    val currentContentColor = colors.contentColor(enabled)
+    val currentTopHighlight = colors.topHighlightColor(enabled)
+    val currentBottomShadow = colors.bottomShadowColor(enabled)
     val shape = RoundedCornerShape(cornerRadius)
 
     Box(
         modifier = modifier
-            .offset(x = pressOffset, y = pressOffset)
-            .embossedSurface(
+            .padding(bottom = depth)
+            .embossedDropShadow(
                 isPressed = isPressed && enabled,
-                enabled = enabled,
-                surfaceColor = surfaceColor,
-                shadowColor = shadowColor,
-                cornerRadius = cornerRadius,
+                shadowColor = currentBottomShadow,
+                shape = shape,
                 depth = depth
             )
             .clip(shape)
+            .background(currentContainerColor)
+            .embossedInnerShadow(
+                isPressed = isPressed && enabled,
+                highlightColor = currentTopHighlight,
+                shadowColor = currentBottomShadow,
+                shape = shape,
+                depth = depth
+            )
             .clickable(
                 interactionSource = interactionSource,
-                indication = null,
+                indication = ripple(),
                 enabled = enabled,
                 role = Role.Button,
                 onClick = onClick
@@ -87,7 +96,7 @@ fun EmbossedButton(
         contentAlignment = Alignment.Center
     ) {
         CompositionLocalProvider(
-            LocalContentColor provides contentColor,
+            LocalContentColor provides currentContentColor,
             LocalTextStyle provides DepthButtonDefaults.textStyle(size)
         ) {
             Row(
@@ -104,7 +113,7 @@ fun EmbossedButton(
 }
 
 /**
- * Text convenience overload for [EmbossedButton].
+ * Text overload for [EmbossedButton].
  */
 @Composable
 fun EmbossedButton(
@@ -115,7 +124,11 @@ fun EmbossedButton(
     preset: ButtonPreset = ButtonPreset.Primary,
     size: ButtonSize = ButtonSize.Medium,
     colors: DepthButtonColors = DepthButtonDefaults.presetColors(preset),
-    depth: Dp = DepthButtonDefaults.depth(size),
+    depth: Dp = when (size) {
+        ButtonSize.Small -> DepthButtonDefaults.EmbossedDepthSmall
+        ButtonSize.Large -> DepthButtonDefaults.EmbossedDepthLarge
+        ButtonSize.Medium -> DepthButtonDefaults.EmbossedDepthDefault
+    },
     cornerRadius: Dp = DepthButtonDefaults.cornerRadius(size),
     contentPadding: PaddingValues = DepthButtonDefaults.contentPadding(size),
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() }
@@ -169,7 +182,7 @@ fun EmbossedButtonsShowcase() {
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         Text(
-            text = "Physical Embossed & Instant Debossed Buttons",
+            text = "Embossed Buttons (Top Highlight + Bottom Shadow)",
             style = LocalTextStyle.current.copy(fontWeight = FontWeight.Bold)
         )
 
@@ -235,5 +248,3 @@ fun EmbossedButtonsShowcase() {
         }
     }
 }
-
-

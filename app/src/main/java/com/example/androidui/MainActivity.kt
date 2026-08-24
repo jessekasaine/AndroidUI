@@ -54,7 +54,7 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun EmbossedButtonDemoScreen() {
     var clickCount by remember { mutableIntStateOf(0) }
-    var lastAction by remember { mutableStateOf("Tap any button to test Embossed & Debossed states") }
+    var lastAction by remember { mutableStateOf("Tap any embossed button to test depth") }
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -71,14 +71,14 @@ fun EmbossedButtonDemoScreen() {
             // Header
             Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
                 Text(
-                    text = "Embossed & Debossed Buttons",
+                    text = "Embossed Depth Buttons",
                     style = MaterialTheme.typography.headlineMedium.copy(
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.onBackground
                     )
                 )
                 Text(
-                    text = "Solid under-shadow depth when idle (Embossed), instantly pressing down into a sunken shadow when clicked (Debossed). Zero gradients & animations.",
+                    text = "Bevel depth with top inset highlight and bottom drop shadow. Inverts bevel when pressed.",
                     style = MaterialTheme.typography.bodyMedium.copy(
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
