@@ -48,42 +48,32 @@ fun EmbossedButton(
     enabled: Boolean = true,
     preset: ButtonPreset = ButtonPreset.Primary,
     size: ButtonSize = ButtonSize.Medium,
-    colors: DepthButtonColors = DepthButtonDefaults.presetColors(preset),
-    depth: Dp = when (size) {
-        ButtonSize.Small -> DepthButtonDefaults.EmbossedDepthSmall
-        ButtonSize.Large -> DepthButtonDefaults.EmbossedDepthLarge
-        ButtonSize.Medium -> DepthButtonDefaults.EmbossedDepthDefault
-    },
-    cornerRadius: Dp = DepthButtonDefaults.cornerRadius(size),
-    contentPadding: PaddingValues = DepthButtonDefaults.contentPadding(size),
+    style: DepthButtonStyle = DepthButtonDefaults.style(preset = preset, size = size),
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
     content: @Composable RowScope.() -> Unit
 ) {
     val isPressed by interactionSource.collectIsPressedAsState()
 
-    val currentContainerColor = colors.containerColor(enabled)
-    val currentContentColor = colors.contentColor(enabled)
-    val currentTopHighlight = colors.topHighlightColor(enabled)
-    val currentBottomShadow = colors.bottomShadowColor(enabled)
-    val shape = RoundedCornerShape(cornerRadius)
+    val currentContainerColor = style.colors.containerColor(enabled)
+    val currentContentColor = style.colors.contentColor(enabled)
+    val shape = RoundedCornerShape(style.cornerRadius)
 
     Box(
         modifier = modifier
-            .padding(bottom = depth)
-            .embossedDropShadow(
-                isPressed = isPressed && enabled,
-                shadowColor = currentBottomShadow,
+            .padding(bottom = style.depth)
+            .embossedDepth(
                 shape = shape,
-                depth = depth
+                shadowStyle = style.shadowStyle,
+                isPressed = isPressed && enabled,
+                enabled = enabled
             )
             .clip(shape)
             .background(currentContainerColor)
-            .embossedInnerShadow(
-                isPressed = isPressed && enabled,
-                highlightColor = currentTopHighlight,
-                shadowColor = currentBottomShadow,
+            .embossedInnerDepth(
                 shape = shape,
-                depth = depth
+                shadowStyle = style.shadowStyle,
+                isPressed = isPressed && enabled,
+                enabled = enabled
             )
             .clickable(
                 interactionSource = interactionSource,
@@ -97,12 +87,12 @@ fun EmbossedButton(
     ) {
         CompositionLocalProvider(
             LocalContentColor provides currentContentColor,
-            LocalTextStyle provides DepthButtonDefaults.textStyle(size)
+            LocalTextStyle provides style.textStyle
         ) {
             Row(
                 modifier = Modifier
                     .defaultMinSize(minHeight = DepthButtonDefaults.minHeight(size))
-                    .padding(contentPadding),
+                    .padding(style.contentPadding),
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -123,14 +113,7 @@ fun EmbossedButton(
     enabled: Boolean = true,
     preset: ButtonPreset = ButtonPreset.Primary,
     size: ButtonSize = ButtonSize.Medium,
-    colors: DepthButtonColors = DepthButtonDefaults.presetColors(preset),
-    depth: Dp = when (size) {
-        ButtonSize.Small -> DepthButtonDefaults.EmbossedDepthSmall
-        ButtonSize.Large -> DepthButtonDefaults.EmbossedDepthLarge
-        ButtonSize.Medium -> DepthButtonDefaults.EmbossedDepthDefault
-    },
-    cornerRadius: Dp = DepthButtonDefaults.cornerRadius(size),
-    contentPadding: PaddingValues = DepthButtonDefaults.contentPadding(size),
+    style: DepthButtonStyle = DepthButtonDefaults.style(preset = preset, size = size),
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() }
 ) {
     EmbossedButton(
@@ -139,10 +122,7 @@ fun EmbossedButton(
         enabled = enabled,
         preset = preset,
         size = size,
-        colors = colors,
-        depth = depth,
-        cornerRadius = cornerRadius,
-        contentPadding = contentPadding,
+        style = style,
         interactionSource = interactionSource
     ) {
         Text(

@@ -72,6 +72,26 @@ data class DepthButtonColors(
 }
 
 /**
+ * Complete styling specification for a depth button, including colors, shadows, geometry, and typography.
+ *
+ * @property colors Colors used for container, content, and depth highlights.
+ * @property shadowStyle Specification for outer drop shadows and inner bevel shadows.
+ * @property depth Vertical elevation depth.
+ * @property cornerRadius Corner radius of the button.
+ * @property contentPadding Padding values inside the button container.
+ * @property textStyle Typography style applied to text content within the button.
+ */
+@Immutable
+data class DepthButtonStyle(
+    val colors: DepthButtonColors,
+    val shadowStyle: DepthShadowStyle,
+    val depth: Dp = DepthButtonDefaults.EmbossedDepthDefault,
+    val cornerRadius: Dp = DepthButtonDefaults.CornerRadiusMedium,
+    val contentPadding: PaddingValues = PaddingValues(horizontal = 20.dp, vertical = 10.dp),
+    val textStyle: TextStyle = TextStyle.Default
+)
+
+/**
  * Default styling, dimensions, and color schemes for Depth Buttons.
  */
 object DepthButtonDefaults {
@@ -81,6 +101,75 @@ object DepthButtonDefaults {
     val CornerRadiusSmall: Dp = 10.dp
     val CornerRadiusMedium: Dp = 14.dp
     val CornerRadiusLarge: Dp = 18.dp
+
+    /**
+     * Builds a [DepthShadowStyle] given depth distance, shadow color, and highlight color.
+     */
+    fun shadowStyle(
+        depth: Dp = EmbossedDepthDefault,
+        shadowColor: Color,
+        highlightColor: Color
+    ): DepthShadowStyle = DepthShadowStyle(
+        dropShadow = ShadowStyle(
+            radius = depth * 2,
+            spread = 0.dp,
+            color = shadowColor.copy(alpha = shadowColor.alpha * 0.45f),
+            offset = androidx.compose.ui.unit.DpOffset(x = 0.dp, y = depth)
+        ),
+        topInnerHighlight = ShadowStyle(
+            radius = 2.dp,
+            spread = 1.dp,
+            color = highlightColor,
+            offset = androidx.compose.ui.unit.DpOffset(x = 0.dp, y = 1.5.dp)
+        ),
+        bottomInnerShadow = ShadowStyle(
+            radius = 2.dp,
+            spread = 1.dp,
+            color = shadowColor.copy(alpha = shadowColor.alpha * 0.35f),
+            offset = androidx.compose.ui.unit.DpOffset(x = 0.dp, y = (-1.5).dp)
+        ),
+        pressedTopInnerShadow = ShadowStyle(
+            radius = 3.dp,
+            spread = 1.5.dp,
+            color = shadowColor.copy(alpha = (shadowColor.alpha * 0.65f).coerceAtMost(1f)),
+            offset = androidx.compose.ui.unit.DpOffset(x = 0.dp, y = depth.coerceAtLeast(2.dp))
+        ),
+        pressedBottomInnerHighlight = ShadowStyle(
+            radius = 2.dp,
+            spread = 1.dp,
+            color = highlightColor.copy(alpha = highlightColor.alpha * 0.35f),
+            offset = androidx.compose.ui.unit.DpOffset(x = 0.dp, y = (-1.5).dp)
+        )
+    )
+
+    /**
+     * Builds a complete [DepthButtonStyle] for the given [preset] and [size].
+     */
+    @Composable
+    @ReadOnlyComposable
+    fun style(
+        preset: ButtonPreset = ButtonPreset.Primary,
+        size: ButtonSize = ButtonSize.Medium
+    ): DepthButtonStyle {
+        val colors = presetColors(preset)
+        val depth = when (size) {
+            ButtonSize.Small -> EmbossedDepthSmall
+            ButtonSize.Large -> EmbossedDepthLarge
+            ButtonSize.Medium -> EmbossedDepthDefault
+        }
+        return DepthButtonStyle(
+            colors = colors,
+            shadowStyle = shadowStyle(
+                depth = depth,
+                shadowColor = colors.bottomShadowColor,
+                highlightColor = colors.topHighlightColor
+            ),
+            depth = depth,
+            cornerRadius = cornerRadius(size),
+            contentPadding = contentPadding(size),
+            textStyle = textStyle(size)
+        )
+    }
 
     /**
      * Returns standard min-height for the given [size].

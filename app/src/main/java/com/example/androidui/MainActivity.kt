@@ -36,6 +36,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.androidui.ui.shared.button.ButtonPreset
 import com.example.androidui.ui.shared.button.ButtonSize
+import com.example.androidui.ui.shared.button.DepthButtonDefaults
 import com.example.androidui.ui.shared.button.EmbossedButton
 import com.example.androidui.ui.theme.AndroidUITheme
 
@@ -264,6 +265,42 @@ fun EmbossedButtonDemoScreen() {
                     Spacer(modifier = Modifier.width(10.dp))
                     Text(
                         text = "Create New Project (Large Embossed)",
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+            }
+
+            // Section 3: Custom Style Token
+            Column(verticalArrangement = Arrangement.spacedBy(14.dp)) {
+                Text(
+                    text = "3. Custom DepthButtonStyle Token",
+                    style = MaterialTheme.typography.titleMedium.copy(
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onBackground
+                    )
+                )
+
+                // Custom Style Override (e.g. Glowing Neon Amber Bevel)
+                val customStyle = DepthButtonDefaults.style(
+                    preset = ButtonPreset.Secondary,
+                    size = ButtonSize.Large
+                ).copy(
+                    depth = 4.dp,
+                    cornerRadius = 24.dp
+                )
+
+                EmbossedButton(
+                    onClick = {
+                        clickCount++
+                        lastAction = "Custom DepthButtonStyle Pressed"
+                    },
+                    style = customStyle,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(text = "⚡", fontSize = 20.sp)
+                    Spacer(modifier = Modifier.width(10.dp))
+                    Text(
+                        text = "Custom Style Token Button (4dp depth, 24dp radius)",
                         fontWeight = FontWeight.Bold
                     )
                 }
