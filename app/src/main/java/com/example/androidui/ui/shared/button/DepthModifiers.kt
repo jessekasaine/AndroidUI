@@ -324,3 +324,5 @@ fun Modifier.embossedDepth(
     containerColor = containerColor,
     depth = depth
 )
+
+// End of Depth and Embossed Shadow Modifier extensions suite.
