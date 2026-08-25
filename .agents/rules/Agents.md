@@ -3,6 +3,12 @@
 This project is for creating UI components that will be used in other projects
 MainActivity is a scrollable screen showcasing this UI components
 
+## Subagents
+
+- Always invoke subagents:
+  - For reviews: `reviewer` subagent
+  - For research: `research-assistant` subagent
+
 ## Project Structure
 
 Single-module Android project (`settings.gradle.kts` includes only `:app`). App code lives in `app/src/main/java/com/example/androidui`, with `MainActivity.kt` as the entry point.
